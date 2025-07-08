@@ -168,6 +168,28 @@ app.post("/add-note", auth, async (req, res) => {
   }
 });
 
+app.get("/get-notes", auth, async (req, res) => {
+  try {
+    const notes = await Note.find({ userId: req.userId });
+
+    res.status(200).json({
+      success: true,
+      message: "Notes fetched successfully",
+      notes
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong fetching notes: " + error.message
+    });
+  }
+});
+app.delete("/delete/:id",auth,async(req,res)=>{
+    const {id}=req.params;
+    const deletedNote = await Note.findByIdAndDelete(id);
+    res.status(200).json({success:true,message:"Note has been delete",deletedNote})
+})
+
 
 
 app.get("/", (req, res) => {
