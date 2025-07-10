@@ -62,10 +62,11 @@ app.post("/auth/sign-up", async (req, res) => {
         if (userExisting) {
            return res.status(501).json({ message: "User Already Exists", success: false })
         }
+        console.log("sign up inputs",req.body);
         const userData = {
             name,
             email,
-            dob
+            dob,
         }
         const otp = otpGenerator();
         const token = jwt.sign({ user: userData, otp }, process.env.jwt_secret, { expiresIn: "5m" })
@@ -79,6 +80,7 @@ app.post("/auth/sign-up", async (req, res) => {
 
 app.post("/auth/sign-up/verification",async(req,res)=>{
     try{
+        console.log("req body for sign in verification",req.body);
     const {otp,tokenForVerification}=req.body;
     const decode=jwt.verify(tokenForVerification,process.env.jwt_secret);
     console.log(decode);
@@ -89,6 +91,7 @@ app.post("/auth/sign-up/verification",async(req,res)=>{
     if(userExisted){
         return res.status(406).json({success:false,message:"Already exists User"});
     }
+    console.log("checking Dob",decode.user.dob);
     const user=new User({
         name:decode.user.name,
         dob:decode.user.dob,
@@ -97,7 +100,7 @@ app.post("/auth/sign-up/verification",async(req,res)=>{
     await user.save();
 
     const token =jwt.sign({id:user._id},process.env.jwt_secret,{expiresIn:"15d"});
-    res.status(200).json({success:true,message:"User Registered Successfully"});
+    res.status(200).json({success:true,message:"User Registered Successfully",user,token});
 }
 catch(e){
     res.status(500).json({success:true,message:`something went wrong ${e.message}`})
@@ -127,12 +130,12 @@ app.post("/auth/sign-in/verification",async(req,res)=>{
     try {
         const {tokenForVerification ,otp}=req.body;
         const decode =jwt.verify(tokenForVerification,process.env.jwt_secret);
-        console.log(decode);
+        console.log("verificationTokenDecoded",decode);
         if(parseInt(otp)!=decode.otp){
             return res.status(401).json({success:false,message:"Otp is invalid or Expired"});
         }
         const token=jwt.sign({id:decode.user._id},process.env.jwt_secret,{expiresIn:"15d"});
-        res.status(200).json({success:true,message:"Signed in Successfully",token})
+        res.status(200).json({success:true,message:"Signed in Successfully",token,user:decode.user})
     } catch (error) {
         res.status(500).json({success:true,message:`${error.message}`})
     }
@@ -167,6 +170,28 @@ app.post("/add-note", auth, async (req, res) => {
     });
   }
 });
+
+app.get("/get-notes", auth, async (req, res) => {
+  try {
+    const notes = await Note.find({ userId: req.userId });
+
+    res.status(200).json({
+      success: true,
+      message: "Notes fetched successfully",
+      notes
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong fetching notes: " + error.message
+    });
+  }
+});
+app.delete("/delete/:id",auth,async(req,res)=>{
+    const {id}=req.params;
+    const deletedNote = await Note.findByIdAndDelete(id);
+    res.status(200).json({success:true,message:"Note has been delete",deletedNote})
+})
 
 
 
