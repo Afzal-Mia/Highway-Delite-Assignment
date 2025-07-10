@@ -8,16 +8,14 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-export const serverAPI = "http://localhost:1200"
+export const serverAPI = "https://highway-delite-assignment-backend.onrender.com"
 
 createRoot(document.getElementById('root')).render(
 <>
   <ToastContainer />
   <ContextProvider>
     <BrowserRouter>
-      <StrictMode>
         <App />
-      </StrictMode>
     </BrowserRouter>
   </ContextProvider>
 </>
