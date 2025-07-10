@@ -6,8 +6,7 @@ import { useNavigate } from 'react-router-dom';
 const Home = () => {
     const navigate = useNavigate();
     const [signUp, setSignUp] = useState(true);
-    const { user, otpField, setOtpField, signUpInitiator, signUpVerification, signInInitiator, signInVerification, profileName } = useContext(GlobalContext);
-    console.log("profileName :", profileName);
+    const { user, otpField, setOtpField, signUpInitiator, signUpVerification, signInInitiator, signInVerification,} = useContext(GlobalContext);
     const [inputOtp, setInputOtp] = useState({
         otp: ''
     });
@@ -241,7 +240,7 @@ const Home = () => {
       {/* Submit Button */}
       <button
         type="submit"
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150"
+        className="w-full bg-blue-600 hover:cursor-pointer hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150"
       >
         {otpField ? (signUp ? "Sign up" : "Sign in") : "Get OTP"}
       </button>

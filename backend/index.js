@@ -174,11 +174,13 @@ app.post("/add-note", auth, async (req, res) => {
 app.get("/get-notes", auth, async (req, res) => {
   try {
     const notes = await Note.find({ userId: req.userId });
+    const user=await User.findById(req.userId);
 
     res.status(200).json({
       success: true,
       message: "Notes fetched successfully",
-      notes
+      notes,
+      user,
     });
   } catch (error) {
     res.status(500).json({
